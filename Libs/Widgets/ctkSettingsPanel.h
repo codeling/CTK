@@ -89,6 +89,17 @@ public:
 
   /// \copybrief registerProperty
   /// \overload
+  template <typename SignalFunc>
+  void registerProperty(const QString& settingKey,
+                        const typename QtPrivate::FunctionPointer<SignalFunc>::Object* object,
+                        const QString& property,
+                        SignalFunc* signal,
+                        const QString& settingLabel = QString(),
+                        SettingOptions options = OptionNone,
+                        QSettings * settings = 0);
+
+  /// \copybrief registerProperty
+  /// \overload
   Q_INVOKABLE void registerProperty(const QString& settingKey, QObject* object,
                                     const QString& objectProperty,
                                     const QByteArray& propertySignal,
@@ -157,6 +168,13 @@ protected:
 private:
   Q_DECLARE_PRIVATE(ctkSettingsPanel);
   Q_DISABLE_COPY(ctkSettingsPanel);
+  void registerPropertyInternal(const QString& key,
+                                QObject* object,
+                                const QString& property,
+                                const QString& label,
+                                SettingOptions options,
+                                QSettings* settings);
+
 };
 
 Q_DECLARE_METATYPE(ctkSettingsPanel::SettingOption)

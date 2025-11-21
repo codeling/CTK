@@ -291,10 +291,9 @@ void ctkSettingsPanel::setSetting(const QString& key, const QVariant& newVal)
 }
 
 // --------------------------------------------------------------------------
-void ctkSettingsPanel::registerProperty(const QString& key,
+void ctkSettingsPanel::registerPropertyInternal(const QString& key,
                                         QObject* object,
                                         const QString& property,
-                                        const char* signal,
                                         const QString& label,
                                         ctkSettingsPanel::SettingOptions options,
                                         QSettings* settings)
@@ -321,15 +320,51 @@ void ctkSettingsPanel::registerProperty(const QString& key,
   }
 
   d->Properties[key] = prop;
+}
+
+// --------------------------------------------------------------------------
+void ctkSettingsPanel::registerProperty(const QString& key,
+                                        QObject* object,
+                                        const QString& property,
+                                        const char* signal,
+                                        const QString& label,
+                                        ctkSettingsPanel::SettingOptions options,
+                                        QSettings* settings)
+{
+  registerPropertyInternal(key, object, property, label, options, settings);
 
   // Create a signal mapper per property to be able to support
   // multiple signals from the same sender.
   QSignalMapper* signalMapper = new QSignalMapper(this);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+  connect(signalMapper, &QSignalMapper::mappedString, this, &ctkSettingsPanel::updateSetting);
+#else
   QObject::connect(signalMapper, SIGNAL(mapped(QString)),
                    this, SLOT(updateSetting(QString)));
+#endif
   signalMapper->setMapping(object, key);
-  this->connect(object, signal, signalMapper, SLOT(map()));
+  connect(object, signal, signalMapper, SLOT(map()));
 
+  Q_D(ctkSettingsPanel);
+  if (d->SaveToSettingsWhenRegister)
+  {
+    this->updateSetting(key);
+  }
+}
+
+// --------------------------------------------------------------------------
+template <typename SignalFunc>
+void ctkSettingsPanel::registerProperty(const QString& key,
+    const typename QtPrivate::FunctionPointer<SignalFunc>::Object* object,
+    const QString& property,
+    SignalFunc* signal,
+    const QString& label,
+    ctkSettingsPanel::SettingOptions options,
+    QSettings* settings)
+{
+  Q_D(ctkSettingsPanel);
+  registerPropertyInternal(key, object, property, label, options, settings);
+  connect(object, signal, this, [this, key] { updateSetting(key); });
   if (d->SaveToSettingsWhenRegister)
   {
     this->updateSetting(key);
