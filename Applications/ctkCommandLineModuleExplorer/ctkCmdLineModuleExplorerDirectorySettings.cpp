@@ -35,7 +35,7 @@ ctkCmdLineModuleExplorerDirectorySettings::ctkCmdLineModuleExplorerDirectorySett
   this->PathListButtonsWidget->init(this->PathListWidget);
 
   this->registerProperty(ctkCmdLineModuleExplorerConstants::KEY_SEARCH_PATHS,
-                         this->PathListWidget, "paths", SIGNAL(pathsChanged(QStringList,QStringList)));
+                         this->PathListWidget, "paths", &ctkPathListWidget::pathsChanged);
 }
 
 void ctkCmdLineModuleExplorerDirectorySettings::applySettings()

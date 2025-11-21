@@ -53,7 +53,7 @@ ctkCmdLineModuleExplorerModulesSettings::ctkCmdLineModuleExplorerModulesSettings
   connect(ui->PathListWidget, SIGNAL(pathsChanged(QStringList,QStringList)), SLOT(pathsAdded(QStringList)));
 
   this->registerProperty(ctkCmdLineModuleExplorerConstants::KEY_REGISTERED_MODULES,
-                         ui->PathListWidget, "paths", SIGNAL(pathsChanged(QStringList,QStringList)));
+                         ui->PathListWidget, "paths", &ctkPathListWidget::pathsChanged);
 }
 
 ctkCmdLineModuleExplorerModulesSettings::~ctkCmdLineModuleExplorerModulesSettings()
