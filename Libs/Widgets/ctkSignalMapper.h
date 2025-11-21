@@ -29,6 +29,7 @@ class QAction;
 #include "ctkWidgetsExport.h"
 
 /// \ingroup Widgets
+/// \deprecated use direct signal connection with lambda instead (see https://doc.qt.io//qt-6/qsignalmapper.html#details)
 /// Advanced QSignalMapper to simplify the use of mapping.
 class CTK_WIDGETS_EXPORT ctkSignalMapper: public QSignalMapper
 {
